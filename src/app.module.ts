@@ -10,11 +10,11 @@ import * as Joi from '@hapi/joi';
     DatabaseModule,
     ConfigModule.forRoot({
       validationSchema: Joi.object({
-        MYSQL_HOST: Joi.string().required(),
-        MYSQL_USER: Joi.string().required(),
-        MYSQL_PASSWORD: Joi.string().required(),
-        MYSQL_PORT: Joi.number().required(),
-        MYSQL_DB: Joi.string().required(),
+        POSTGRES_HOST: Joi.string().required(),
+        POSTGRES_USER: Joi.string().required(),
+        POSTGRES_PASSWORD: Joi.string().required(),
+        POSTGRES_PORT: Joi.number().required(),
+        POSTGRES_DB: Joi.string().required(),
       }),
     }),
   ],
