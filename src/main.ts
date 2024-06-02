@@ -11,6 +11,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
+
+  app.enableCors({
+    origin: [
+      'http://localhost:3000',
+      'https://master.d3bldwtlkvx4k9.amplifyapp.com',
+    ],
+    credentials: true,
+  });
   // await app.listen(3000);
   const configService: ConfigService = app.get(ConfigService);
 
