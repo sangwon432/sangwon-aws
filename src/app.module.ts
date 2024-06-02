@@ -18,6 +18,7 @@ import { BlogModule } from './blog/blog.module';
         POSTGRES_PASSWORD: Joi.string().required(),
         POSTGRES_PORT: Joi.number().required(),
         POSTGRES_DB: Joi.string().required(),
+        SERVER_PORT: Joi.number().required(),
       }),
     }),
     BlogModule,
