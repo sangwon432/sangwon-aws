@@ -22,4 +22,10 @@ export class UserService {
     if (user) return user;
     throw new HttpException('no user', HttpStatus.NOT_FOUND);
   }
+
+  async getUserById(id: string) {
+    const user = await this.userRepository.findOneBy({ id });
+    if (user) return user;
+    throw new HttpException('no user', HttpStatus.NOT_FOUND);
+  }
 }
