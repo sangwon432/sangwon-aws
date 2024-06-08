@@ -35,4 +35,9 @@ export class AuthController {
   async getUserInfo(@Req() req: RequestWithUserInterface) {
     return await req.user;
   }
+
+  @Post('/email/test')
+  async sendEmailTest(@Body('email') email: string) {
+    return await this.authService.sendEmailTest(email);
+  }
 }

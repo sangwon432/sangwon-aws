@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoggedinUserDto } from '../user/dto/loggedin-user.dto';
@@ -6,6 +6,9 @@ import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TokenPayloadInterface } from '../interfaces/tokenPayload.interface';
+import { EmailService } from '../email/email.service';
+import { CACHE_MANAGER } from '@nestjs/common/cache';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +16,8 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   //회원가입 프로세스
@@ -46,4 +51,35 @@ export class AuthService {
     });
     return token;
   }
+
+  async initEmailVerification(email: string) {
+    const generateNo = this.generateOTP();
+    //자동 생성된 번호를 redis에 저장, 키: 밸류로 저장
+    await this.cacheManager.set(email, generateNo);
+
+    await this.emailService.sendMail({
+      to: email,
+      subject: 'check email test',
+      text: `The confirmation number is as follows. ${generateNo}`,
+    });
+    return 'please check your email';
+  }
+
+  generateOTP() {
+    let OTP = '';
+
+    for (let i = 1; i <= 6; i++) {
+      OTP += Math.floor(Math.random() * 10);
+    }
+    return OTP;
+  }
+
+  // async sendEmailTest(email: string) {
+  //   await this.emailService.sendMail({
+  //     to: email,
+  //     subject: 'check email test',
+  //     text: 'The confirmation number is as follows',
+  //   });
+  //   return 'please check your email';
+  // }
 }
