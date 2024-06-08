@@ -38,6 +38,6 @@ export class AuthController {
 
   @Post('/email/test')
   async sendEmailTest(@Body('email') email: string) {
-    return await this.authService.sendEmailTest(email);
+    return await this.authService.initEmailVerification(email);
   }
 }
