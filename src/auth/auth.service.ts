@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoggedinUserDto } from '../user/dto/loggedin-user.dto';
@@ -9,6 +15,7 @@ import { TokenPayloadInterface } from '../interfaces/tokenPayload.interface';
 import { EmailService } from '../email/email.service';
 import { CACHE_MANAGER } from '@nestjs/common/cache';
 import { Cache } from 'cache-manager';
+import { EmailVerficationDto } from '../user/dto/email-verification.dto';
 
 @Injectable()
 export class AuthService {
@@ -72,6 +79,16 @@ export class AuthService {
       OTP += Math.floor(Math.random() * 10);
     }
     return OTP;
+  }
+
+  async confirmEmailVerification(emailVerficationDto: EmailVerficationDto) {
+    const { email, code } = emailVerficationDto;
+    const codeFromRedis = await this.cacheManager.get(email);
+    if (codeFromRedis !== code) {
+      throw new BadRequestException('Wrong code provided');
+    }
+    await this.cacheManager.del(email);
+    return 'success';
   }
 
   // async sendEmailTest(email: string) {
