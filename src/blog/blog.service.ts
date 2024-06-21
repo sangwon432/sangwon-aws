@@ -3,6 +3,9 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from './entities/blog.entity';
 import { Repository } from 'typeorm';
+import { PageOptionsDto } from '../common/dtos/page-options.dto';
+import { PageDto } from '../common/dtos/page.dto';
+import { PageMetaDto } from '../common/dtos/page-meta.dto';
 
 @Injectable()
 export class BlogService {
@@ -17,9 +20,34 @@ export class BlogService {
     return newBlog;
   }
 
-  async getBlogData() {
-    const blogs = await this.blogRepository.find();
-    return blogs;
+  async getBlogData(pageOptionsDto: PageOptionsDto): Promise<PageDto<Blog>> {
+    // const blogs = await this.blogRepository.find();
+    // return blogs;
+
+    const queryBuilder = this.blogRepository.createQueryBuilder('blog');
+    queryBuilder
+      // .leftJoinAndSelect('user.consent', 'consent')
+      // .leftJoinAndSelect('user.profile', 'profile')
+      // .leftJoinAndSelect('user.jobInfo', 'job')
+      // .leftJoinAndSelect('user.educationInfo', 'education')
+      // .leftJoinAndSelect('user.religionInfo', 'religion')
+      // .leftJoinAndSelect('user.marriageInfo', 'marriage')
+      .orderBy('blog.createdAt', pageOptionsDto.order)
+      .skip(pageOptionsDto.skip)
+      .take(pageOptionsDto.take);
+
+    // const queryBuilder = this.blogRepository.createQueryBuilder('blog');
+    // queryBuilder
+    //   .orderBy('blog.createdAt', pageOptionsDto.order)
+    //   .skip(pageOptionsDto.skip)
+    //   .take(pageOptionsDto.take);
+
+    const itemCount = await queryBuilder.getCount();
+    const { entities } = await queryBuilder.getRawAndEntities();
+
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+
+    return new PageDto(entities, pageMetaDto);
   }
 
   async getBlogById(blogId: string) {

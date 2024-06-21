@@ -6,11 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { PageOptionsDto } from '../common/dtos/page-options.dto';
+import { PageDto } from '../common/dtos/page.dto';
+import { Blog } from './entities/blog.entity';
 
 @Controller('blog')
 @ApiTags('blog')
@@ -22,9 +26,12 @@ export class BlogController {
     return await this.blogService.createBlog(createBlogDto);
   }
 
+  //pagination
   @Get('all')
-  async getBlogs() {
-    return await this.blogService.getBlogData();
+  async getBlogs(
+    @Query() pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<Blog>> {
+    return await this.blogService.getBlogData(pageOptionsDto);
   }
 
   @Get(':id')
@@ -44,4 +51,6 @@ export class BlogController {
   ) {
     return await this.blogService.updateBlogById(id, updateBlogDto);
   }
+
+  ////PAGINATION
 }
