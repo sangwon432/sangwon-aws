@@ -1,0 +1,32 @@
+version: "3"
+services:
+  sangwon_api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+
+    volumes:
+      - .:/usr/src/app
+
+    env_file:
+      - .env
+    command: npm run start:dev
+    ports:
+      - 8000:8000
+
+  sangwondb:
+    container_name: sangwondb
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+
+  redis:
+    container_name: sangwon_redis
+    image: "redis:alpine"
+    env_file:
+      - .env
+    ports:
+      - 6379:6379
